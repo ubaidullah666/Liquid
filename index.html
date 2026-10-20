@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self';">
+  <title>Liquid Glass</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="interface.css">
+  <script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head>
+<body>
+  <header><button class="brand" id="liquid-home" aria-label="Return to liquid orb"><i></i> LIQUID</button><button id="history-toggle" title="Search saved conversation history">History</button><div id="tab-strip" role="tablist" aria-label="Browser tabs"></div><button id="new-tab" aria-label="New tab" title="New tab (Ctrl+T)">+</button><div class="window-controls"><button aria-label="Minimize" data-action="minimize">−</button><button aria-label="Maximize" data-action="maximize">□</button><button aria-label="Close" data-action="close">×</button></div></header>
+  <main aria-label="Animated liquid glass orb"><div id="scene"></div><div class="caption"><span class="live-dot"></span><span id="state">A moment of clarity</span></div></main>
+  <div id="liquid-frame" aria-hidden="true"></div>
+  <section id="chat-panel" aria-label="Conversation"><div id="chat-heading"><span id="model-status">CONNECTING TO OLLAMA</span><span>HISTORY SAVED ON THIS DEVICE</span></div><input id="history-search" aria-label="Search saved history" placeholder="Search your saved conversations…"><div id="chat-messages" role="log" aria-live="polite" aria-relevant="additions text"></div><div id="chat-error" role="alert"></div></section>
+  <nav id="navigation" aria-label="Browser navigation"><button id="back" title="Back (Alt+Left)" aria-label="Back">←</button><button id="forward" title="Forward (Alt+Right)" aria-label="Forward">→</button><button id="reload" title="Reload (Ctrl+R)" aria-label="Reload">↻</button></nav>
+  <div id="browser-tools"><button id="find-toggle" title="Find on page (Ctrl+F)" aria-label="Find on page">⌕</button><button id="browser-menu" aria-label="Browser menu" title="Browser menu">⋯</button></div>
+  <footer><div id="response" role="status" aria-live="polite"></div><form id="composer"><span class="field-icon" id="connection" title="Liquid glass" aria-hidden="true">✧</span><textarea id="message" aria-label="Message or browser command" placeholder="Message Liquid" maxlength="16000" rows="2" spellcheck="false"></textarea><button id="stop-answer" type="button" aria-label="Stop response" title="Stop response" hidden>■</button><button id="send" type="submit" aria-label="Send message or browse">↑</button></form><div class="hint">QWEN 2.5:3B <span>·</span> LOCAL CHAT WITH MEMORY</div></footer>
+  <section id="browser-empty" aria-label="New browser tab"><div class="empty-mark">✧</div><h1>A little curiosity.<br>A whole new world.</h1><p>Search or enter a website in the glass bar above.</p><div class="quick-links"><button data-url="https://www.google.com">Google <span>↗</span></button><button data-url="https://www.wikipedia.org">Wikipedia <span>↗</span></button><button data-url="https://www.youtube.com">YouTube <span>↗</span></button></div><span class="empty-footnote">YOUR WINDOW TO THE WEB</span></section>
+  <section id="browser-error" role="alert"><div class="empty-mark">↻</div><h1>This page couldn’t be reached.</h1><p id="error-detail"></p><button id="retry">Try again</button></section>
+  <div id="find-bar"><label for="find-input">Find on page</label><input id="find-input" placeholder="Find…"><span id="find-count"></span><button id="find-prev" aria-label="Previous match">↑</button><button id="find-next" aria-label="Next match">↓</button><button id="find-close" aria-label="Close find">×</button></div>
+  <div id="browser-status" role="status"><span id="page-status">Ready</span><span id="download-status"></span><span id="zoom-status">100%</span></div>
+  <script type="module" src="personal-ui.js"></script>
+  <script type="module" src="browser-ui.js"></script>
+  <script type="module" src="renderer.js"></script>
+</body></html>
+

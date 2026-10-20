@@ -1,0 +1,22 @@
+{
+  "name": "liquid-glass",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A quiet desktop canvas with a Blender-sculpted liquid glass orb.",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check main.cjs && node --check renderer.js && node --check browser-engine.cjs && node --check browser-ui.js && node --check chat-engine.cjs && node --check chat-ui.js && node --check personal-engine.cjs && node --check personal-ui.js && node --check code-chat.js && node --check code-runner.cjs && node --check code-output.js && node --check model-picker.js && node --check ollama-models.cjs && node --check mode-state.js && node --check codex-files.cjs && node --check attachments.cjs && node --check web-search.cjs && node --check terminal-engine.cjs && node --check ollama-agent.cjs && node --check preview-engine.cjs && node --check feature-controls.js && node --check features-smoke.cjs && node --test browser-input.test.cjs history-store.test.cjs personal-store.test.cjs code-output.test.cjs code-engine.test.cjs code-runner.test.cjs ollama-models.test.cjs codex-files.test.cjs assistant-tools.test.cjs",
+    "package": "node package-app.cjs"
+  },
+  "dependencies": {
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^6.3.289",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@electron/packager": "19.0.1",
+    "electron": "44.4.5"
+  },
+  "type": "module"
+}

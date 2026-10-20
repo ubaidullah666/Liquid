@@ -1,0 +1,52 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { HistoryStore, contextFor } = require('./history-store.cjs');
+test('deleting conversations removes every revision from persistent history',t=>{
+  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'liquid-delete-'));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+  const history=new HistoryStore(directory);
+  const row=history.save({role:'user',sessionId:'one',content:'secret old text'});history.save({...row,content:'updated text'});
+  history.save({role:'user',sessionId:'two',content:'keep me'});history.removeSession('one');
+  assert.equal(new HistoryStore(directory).all().length,1);assert.doesNotMatch(fs.readFileSync(history.file,'utf8'),/secret|updated/);
+  history.clear();assert.equal(new HistoryStore(directory).all().length,0);
+});
+test('history survives restart, preserves browser requests and updates partial replies', () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'liquid-history-'));
+  const history = new HistoryStore(directory);
+  history.save({ role: 'user', content: 'Remember my project Aurora' });
+  const reply = history.save({ role: 'assistant', content: 'Thinking', status: 'streaming' });
+  history.save({ ...reply, content: 'I remember Aurora', status: 'complete' });
+  history.save({ role: 'user', content: 'search Aurora on browser', kind: 'browser' });
+  fs.appendFileSync(history.file, '{interrupted');
+  const restored = new HistoryStore(directory);
+  restored.save({ role: 'user', content: 'What is my project?' });
+  const again = new HistoryStore(directory);
+  assert.equal(again.all().length, 4);
+  assert.equal(again.all()[1].content, 'I remember Aurora');
+  assert.equal(again.page({ query: 'browser' }).records.length, 1);
+  assert.equal(again.page({ limit: 2 }).more, true);
+});
+test('old relevant facts are included even beyond the recent context budget', () => {
+  const records = [{ id: 'fact', role: 'user', content: 'Remember my project is Aurora.', time: '2025-01-01', status: 'complete' }];
+  for (let i = 0; i < 60; i++) records.push({ id: String(i), role: 'user', content: 'Unrelated details '.repeat(100), status: 'complete' });
+  records.push({ id: 'current', role: 'user', content: 'What is my project called?', status: 'complete' });
+  const context = contextFor(records, 'What is my project called?');
+  assert(context[0].content.includes('Aurora'));
+  assert.equal(context.at(-1).content, 'What is my project called?');
+  assert(context.reduce((sum, message) => sum + message.content.length, 0) < 30000);
+});
+test('conversation groups preserve legacy history and reopen independently', () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'liquid-sessions-'));
+  const store = new HistoryStore(directory);
+  store.save({role:'user',content:'Legacy conversation'});
+  store.save({role:'user',content:'First new chat',sessionId:'one'});
+  store.save({role:'assistant',content:'First reply',sessionId:'one'});
+  store.save({role:'user',content:'Second new chat',sessionId:'two'});
+  const reopened = new HistoryStore(directory);
+  assert.equal(reopened.page({sessionId:'fresh'}).records.length,0);
+  assert.equal(reopened.page({sessionId:'one'}).records.length,2);
+  assert.equal(reopened.page({sessionId:'legacy'}).records[0].content,'Legacy conversation');
+  assert.deepEqual(reopened.sessions().map(s=>s.id),['two','one','legacy']);
+});

@@ -1,0 +1,21 @@
+{
+  "controls": {
+    "files": true,
+    "web": true,
+    "thinking": true,
+    "terminal": true
+  },
+  "buttons": {
+    "preview": true,
+    "download": true,
+    "terminalVisible": true
+  },
+  "preview": {
+    "value": "working",
+    "linked": "yes",
+    "color": "rgb(1, 2, 3)",
+    "bridge": "undefined",
+    "node": "undefined"
+  },
+  "errors": []
+}

@@ -1,0 +1,15 @@
+node_modules/
+.npm-cache/
+tools/
+dist/
+preview.png
+*.blend1
+.browser-test-profile/
+browser-preview.png
+*.log
+.chat-test-profile/
+.personal-test-profile/
+.session-test-profile/
+calendar-preview.png
+chat-preview.png
+browser-*-preview.png

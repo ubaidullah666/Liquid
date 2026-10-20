@@ -1,0 +1,23 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { OllamaModels } = require('./ollama-models.cjs');
+test('discovers local and cloud models and persists choices separately by profile', async t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(),'liquid-models-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const request=async()=>({ok:true,json:async()=>({models:[{name:'qwen2.5:3b'},{name:'gemma4:12b'},{name:'remote-custom',remote_host:'https://ollama.com'},{name:'minimax-m3:cloud'}]})});
+  const store=new OllamaModels(path.join(root,'a'),{fetch:request});
+  const state=await store.list();
+  assert.equal(state.models.length,4);assert.equal(state.models[2].cloud,true);assert.equal(state.models[3].cloud,true);
+  await store.select('gemma4:12b');
+  assert.equal(new OllamaModels(path.join(root,'a'),{fetch:request}).selected.name,'gemma4:12b');
+  assert.equal(new OllamaModels(path.join(root,'b'),{fetch:request}).selected.name,'qwen2.5:3b');
+  await store.select('gpt-oss:120b-cloud');assert.equal(store.selected.cloud,true);
+  await assert.rejects(store.select('not-downloaded:1b'),/downloaded/);
+  await assert.rejects(store.select('../bad model'),/valid/);
+  const offline=new OllamaModels(root,{fetch:async()=>{throw Error('offline');}});
+  assert.equal((await offline.list()).online,false);
+  await assert.rejects(offline.select('gemma4:12b'),/Start Ollama/);
+});

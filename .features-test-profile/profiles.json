@@ -1,0 +1,10 @@
+{
+  "active": "b5d94949-50b8-4af5-a610-cd95e8d61736",
+  "profiles": [
+    {
+      "id": "b5d94949-50b8-4af5-a610-cd95e8d61736",
+      "name": "Personal",
+      "hello": false
+    }
+  ]
+}
